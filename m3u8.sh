@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # --- AYARLAR ---
-PROJE_DIR="/root/tecotv"
-cd $PROJE_DIR || { echo "Dizin bulunamadı!"; exit 1; }
+cd "$(dirname "$0")"
 
 # Sistem yollarını tanımla (Cron çalışırken hata almamak için)
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
