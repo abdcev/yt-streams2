@@ -1,1 +1,37 @@
+name: Playlist Auto Refresh
 
+on:
+  schedule:
+    # Her 3 saatte bir çalışır. (Dakika Saat Gün Ay HaftanınGünü)
+    - cron: '0 */3 * * *'
+  workflow_dispatch: # İstediğinde manuel başlatabilmen için butonu ekler
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Dependencies
+        run: sudo apt-get install -y jq curl
+
+      - name: Run Update Script
+        run: |
+          chmod +x update.sh  # Scriptinin adının update.sh olduğunu varsayıyorum
+          ./update.sh
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add playlist/
+          if ! git diff --cached --quiet; then
+            git commit -m "Auto-Update: $(date +'%Y-%m-%d %H:%M')"
+            git push
+          else
+            echo "No changes to commit"
+          fi
