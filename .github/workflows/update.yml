@@ -1,1 +1,28 @@
+name: IPTV Otomatik Guncelle
 
+on:
+  schedule:
+    - cron: '0 */3 * * *' # Her 3 saatte bir çalışır
+  workflow_dispatch: # İstediğinde manuel başlatma butonu
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Gerekli Paketleri Kur
+        run: sudo apt-get install -y jq curl
+
+      - name: Scripti Calistir
+        run: |
+          chmod +x update.sh
+          ./update.sh
+
+      - name: GitHub'a Kaydet
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add .
+          git commit -m "Otomatik Guncelleme: $(date)" || exit 0
+          git push
